@@ -1,19 +1,24 @@
-FROM ruby:2.3-slim
+FROM ruby:2.3
+# Using the ruby onbuild image is not currently possible because some gems dependencies
+# needs to be resoveld before `bundle install` starts (rugged uses cmake).
+
 MAINTAINER Denis Hovart <hello@denishovart.com>
 
-RUN apt-get update -qq
+ENV DIASPORA_PATH "/diaspora"
+RUN mkdir -p $DIASPORA_PATH
+WORKDIR $DIASPORA_PATH
+
+RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
-        build-essential cmake nodejs libpq-dev libmysqlclient-dev \
-        pkg-config git imagemagick ghostscript
+        cmake nodejs ghostscript
 
-RUN mkdir -p /diaspora
-WORKDIR /diaspora
+ADD Gemfile* $DIASPORA_PATH/
 
-ADD Gemfile* ./
-RUN bundle install \
-  --jobs $(nproc --all) --retry 3 \
-    --with mysql postgresql
+RUN bundle config --global jobs $(nproc --all) && \
+    bundle config --global retry 5 && \
+    bundle config --global with postgresql \ &&
+    bundle install
 
-ADD . .
+COPY . $DIASPORA_PATH/
 
-CMD script/server start -p 3000
+CMD script/server start
