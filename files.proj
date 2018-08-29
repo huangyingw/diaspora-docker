@@ -1,8 +1,0 @@
-"./.git/config"
-"./.gitconfig"
-"./Dockerfile"
-"./README.md"
-"./docker-compose.yml"
-"./includefile.conf"
-"./prunefile.conf"
-"./prunefix.conf"
