@@ -15,9 +15,9 @@ RUN apt-get install -y --no-install-recommends \
 ADD Gemfile* $DIASPORA_PATH/
 
 RUN bundle config --global jobs $(nproc --all) && \
-    bundle config --global retry 5 && \
-    bundle config --global with postgresql \ &&
-    bundle install
+        bundle config --global retry 5 && \
+        bundle config --global with postgresql \
+        && bundle install
 
 COPY . $DIASPORA_PATH/
 
